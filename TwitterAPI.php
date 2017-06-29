@@ -32,9 +32,19 @@ class TwitterAPI {
      * @param $keyWord Key word to the query.
      */
     public function recentTweetsWord($keyWord) {
-        $json = TwitterAPI::$conection->get('search/tweets', array("q" => "$keyWord", "recent_type" => "recent", "count" => "10"));
+        $json = TwitterAPI::$connection->get('search/tweets', array("q" => "$keyWord", "recent_type" => "recent", "count" => "10"));
         foreach ($json->statuses as $i => $i) {
             echo ("<br> $i  -" . $json->statuses[$i]->text . "</br>"); //Give attention to this expression. It does not seems good. Study more.
+        }
+    }
+
+    /**
+     * Builds a dictionary with tweets that have trending topics in it.
+     * @param $trending Array with trending topics.
+     */
+    public function trendTweets($trending = array()) {
+        foreach ($trending as $i => $i) {
+            $this->recentTweetsWord($trending[$i]); #UNDER CONSTRUCTION
         }
     }
 
@@ -63,8 +73,10 @@ class TwitterAPI {
         $geoPlanet = new GeoPlanet();
         $json = TwitterAPI::$connection->get('trends/place', array("id" => $geoPlanet->getWoeid($placeName)));
         foreach ($json[0]->trends as $i => $i) {
+            $trendingList[$i] = $json[0]->trends[$i]->name;
             echo ("<br>$i - " . $json[0]->trends[$i]->name . "</br>"); //Give attention to this expression. It does not seems good. Study more.
         }
+        return $trendingList;
     }
 
 }
