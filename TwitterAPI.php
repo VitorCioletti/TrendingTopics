@@ -33,8 +33,25 @@ class TwitterAPI {
      */
     public function recentTweetsWord($keyWord) {
         $json = TwitterAPI::$conection->get('search/tweets', array("q" => "$keyWord", "recent_type" => "recent", "count" => "10"));
-        foreach ($json->statuses as $i => $item) {
+        foreach ($json->statuses as $i => $i) {
             echo ("<br> $i  -" . $json->statuses[$i]->text . "</br>"); //Give attention to this expression. It does not seems good. Study more.
+        }
+    }
+
+    private function getUser($userName) {
+        $json = TwitterAPI::$connection->get('users/lookup', array("screen_name" => "$userName", "include_entities" => false));
+        return ($json[0]->id);
+    }
+
+    /**
+     * Prints last tweets of a certain user..
+     * @param $userName Twitter name of the user.
+     */
+    public function userTweets($userName) {
+        $id = $this->getUser($userName);
+        $json = TwitterAPI::$connection->get('statuses/user_timeline', array("user_id" => $id, "screen_name" => $userName));
+        foreach ($json as $i => $i) {
+            echo ("<br> $i - " . $json[$i]->text . "</br>");
         }
     }
 
@@ -45,7 +62,7 @@ class TwitterAPI {
     public function trendsPlace($placeName) {
         $geoPlanet = new GeoPlanet();
         $json = TwitterAPI::$connection->get('trends/place', array("id" => $geoPlanet->getWoeid($placeName)));
-        foreach ($json[0]->trends as $i => $item) {
+        foreach ($json[0]->trends as $i => $i) {
             echo ("<br>$i - " . $json[0]->trends[$i]->name . "</br>"); //Give attention to this expression. It does not seems good. Study more.
         }
     }
