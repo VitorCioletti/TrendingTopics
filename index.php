@@ -1,5 +1,5 @@
 <?php
 
 include 'TwitterAPI.php';
-$twitterCon = new TwitterAPI();
+$twitterCon = TwitterAPI::getInstance();
 $twitterCon->trendsPlace("Brazil");
