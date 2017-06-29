@@ -32,9 +32,16 @@ class TwitterAPI {
      * @param $keyWord Key word to the query.
      */
     public function recentTweetsWord($keyWord) {
+        $recent = array();
         $json = TwitterAPI::$connection->get('search/tweets', array("q" => "$keyWord", "recent_type" => "recent", "count" => "10"));
-        foreach ($json->statuses as $i => $i) {
-            echo ("<br> $i  -" . $json->statuses[$i]->text . "</br>"); //Give attention to this expression. It does not seems good. Study more.
+        if (!isset($json)) {
+            foreach ($json->statuses as $i => $i) {
+                $recent = $json->statuses[$i]->text;
+                echo ("<br> $i  -" . $json->statuses[$i]->text . "</br>"); //Give attention to this expression. It does not seems good. Study more.
+            }
+            return $recent;
+        } else {
+            echo "<br> No values returned!</br> ";
         }
     }
 
@@ -43,14 +50,27 @@ class TwitterAPI {
      * @param $trending Array with trending topics.
      */
     public function trendTweets($trending = array()) {
-        foreach ($trending as $i => $i) {
-            $this->recentTweetsWord($trending[$i]); #UNDER CONSTRUCTION
+        if (sizeof($trending) >= 1) {
+            foreach ($trending as $i => $i) {
+                $values[$trending[$i]] = $this->recentTweetsWord($trending[$i]);
+            }
+            var_dump($values);
+        } else {
+            echo "<br>List of trending topics is null </br>";
         }
     }
 
+    /**
+     * Get information on a certain user.
+     * @param $userName Twitter name of the user.
+     */
     private function getUser($userName) {
         $json = TwitterAPI::$connection->get('users/lookup', array("screen_name" => "$userName", "include_entities" => false));
-        return ($json[0]->id);
+        if (!isset($json)) {
+            return ($json[0]->id);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -60,8 +80,12 @@ class TwitterAPI {
     public function userTweets($userName) {
         $id = $this->getUser($userName);
         $json = TwitterAPI::$connection->get('statuses/user_timeline', array("user_id" => $id, "screen_name" => $userName));
-        foreach ($json as $i => $i) {
-            echo ("<br> $i - " . $json[$i]->text . "</br>");
+        if (!isset($json) || !isset($id)) {
+            foreach ($json as $i => $i) {
+                echo ("<br> $i - " . $json[$i]->text . "</br>");
+            }
+        } else {
+            echo "<br>Null values</br>";
         }
     }
 
@@ -71,12 +95,21 @@ class TwitterAPI {
      */
     public function trendsPlace($placeName) {
         $geoPlanet = new GeoPlanet();
-        $json = TwitterAPI::$connection->get('trends/place', array("id" => $geoPlanet->getWoeid($placeName)));
-        foreach ($json[0]->trends as $i => $i) {
-            $trendingList[$i] = $json[0]->trends[$i]->name;
-            echo ("<br>$i - " . $json[0]->trends[$i]->name . "</br>"); //Give attention to this expression. It does not seems good. Study more.
+        $woeid = $geoPlanet->getWoeid($placeName);
+        if (!is_null($woeid)) {
+            $json = TwitterAPI::$connection->get('trends/place', array("id" => $woeid));
+            if (sizeof($json[0]->trends) >= 1) {
+                foreach ($json[0]->trends as $i => $i) {
+                    $trendingList[$i] = $json[0]->trends[$i]->name;
+                    echo ("<br>$i - " . $json[0]->trends[$i]->name . "</br>"); //Give attention to this expression. It does not seems good. Study more.
+                }
+                return $trendingList;
+            } else {
+                echo "<br>Error, there are null values</br>";
+            }
+        } else {
+            echo "<br>GeoPlanet WOEID is null</br>";
         }
-        return $trendingList;
     }
 
 }
