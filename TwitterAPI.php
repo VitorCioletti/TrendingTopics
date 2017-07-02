@@ -31,7 +31,7 @@ class TwitterAPI {
      * Prints recent 10 tweets by key word.
      * @param $keyWord Key word to the query.
      */
-    public function recentTweetsWord($keyWord) {
+    public function getRecentTweetsByWord($keyWord) {
         $recent = array();
         $json = TwitterAPI::$connection->get('search/tweets', array("q" => "$keyWord", "recent_type" => "recent", "count" => "10"));
         if (!isset($json)) {
@@ -50,10 +50,10 @@ class TwitterAPI {
      * Builds a dictionary with tweets that have trending topics in it.
      * @param $trending Array with trending topics.
      */
-    public function trendTweets($trending = array()) {
+    public function getTrendingTopicTweets($trending = array()) {
         if (sizeof($trending) >= 1) {
             foreach ($trending as $i => $i) {
-                $values[$trending[$i]] = $this->recentTweetsWord($trending[$i]);
+                $values[$trending[$i]] = $this->getRecentTweetsByWord($trending[$i]);
             }
             var_dump($values);
         } else {
@@ -65,7 +65,7 @@ class TwitterAPI {
      * Get information on a certain user.
      * @param $userName Twitter name of the user.
      */
-    private function getUser($userName) {
+    private function getUserID($userName) {
         $json = TwitterAPI::$connection->get('users/lookup', array("screen_name" => "$userName", "include_entities" => false));
         if (!isset($json)) {
             return ($json[0]->id);
@@ -78,8 +78,8 @@ class TwitterAPI {
      * Prints last tweets of a certain user..
      * @param $userName Twitter name of the user.
      */
-    public function userTweets($userName) {
-        $id = $this->getUser($userName);
+    public function getUserTweets($userName) {
+        $id = $this->getUserID($userName);
         $json = TwitterAPI::$connection->get('statuses/user_timeline', array("user_id" => $id, "screen_name" => $userName));
         if (!isset($json) || !isset($id)) {
             foreach ($json as $i => $i) {
@@ -93,8 +93,9 @@ class TwitterAPI {
     /**
      * Prints trending topics by country.
      * @param $placeName Name of the country.
+     * @return List of the trending ropics
      */
-    public function trendsPlace($placeName) {
+    public function getTrendingTopicByPlace($placeName) {
         $geoPlanet = new GeoPlanet();
         $woeid = $geoPlanet->getWoeid($placeName);
         if (!is_null($woeid)) {
@@ -119,7 +120,7 @@ class TwitterAPI {
      * @param $enumType BannerTypeEnum attribute.
      * @return Banner url
      */
-    public function userBanner($userName, $enumType) {
+    public function getUserBanner($userName, $enumType) {
         if (!is_null($userName)) {
             $json = TwitterAPI::$connection->get('users/profile_banner', array('screen_name' => $userName));
             if (!is_null($json)) {

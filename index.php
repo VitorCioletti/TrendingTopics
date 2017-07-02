@@ -3,6 +3,6 @@
 include 'TwitterAPI.php';
 include 'BannerTypeEnum.php';
 $twitterCon = TwitterAPI::getInstance();
-#$twitterCon->trendsPlace("Brazil");
-#$twitterCon->userTweets("jovemnerd");
-$twitterCon->userBanner("jovemnerd", BannerTypeEnum::ipad);
+$twitterCon->getTrendingTopicByPlace("Brazil");
+$img = $twitterCon->getUserBanner("jovemnerd", BannerTypeEnum::ipad);
+echo "<img src=$img>";
