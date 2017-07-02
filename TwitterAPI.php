@@ -42,6 +42,7 @@ class TwitterAPI {
             return $recent;
         } else {
             echo "<br> No values returned!</br> ";
+            return null;
         }
     }
 
@@ -109,6 +110,25 @@ class TwitterAPI {
             }
         } else {
             echo "<br>GeoPlanet WOEID is null</br>";
+        }
+    }
+
+    /**
+     * Get banner of a certain user
+     * @param $userName Name of the user.
+     * @param $enumType BannerTypeEnum attribute.
+     * @return Banner url
+     */
+    public function userBanner($userName, $enumType) {
+        if (!is_null($userName)) {
+            $json = TwitterAPI::$connection->get('users/profile_banner', array('screen_name' => $userName));
+            if (!is_null($json)) {
+                return ($json->sizes->$enumType->url);
+            } else {
+                echo "Requisition got null results";
+            }
+        } else {
+            echo "Null value";
         }
     }
 

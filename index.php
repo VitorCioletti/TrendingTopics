@@ -1,7 +1,8 @@
 <?php
 
 include 'TwitterAPI.php';
+include 'BannerTypeEnum.php';
 $twitterCon = TwitterAPI::getInstance();
 #$twitterCon->trendsPlace("Brazil");
 #$twitterCon->userTweets("jovemnerd");
-$twitterCon->trendsPlace("Brazil");
+$twitterCon->userBanner("jovemnerd", BannerTypeEnum::ipad);
