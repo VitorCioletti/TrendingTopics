@@ -144,9 +144,9 @@ class TwitterAPI {
         return $json;
     }
 
-    public function getProfileImage() {
+    public function getAccountCredentialsStatus() {
         $json = TwitterAPI::$connection->get('account/verify_credentials');
-        return $json
+        return $json;
     }
 
 }
