@@ -127,10 +127,26 @@ class TwitterAPI {
                 return ($json->sizes->$enumType->url);
             } else {
                 echo "Requisition got null results";
+                return null;
             }
         } else {
             echo "Null value";
+            return null;
         }
+    }
+
+    /**
+     * Get information on account that provided Twitter API keys.
+     * @return Std object with all informations.
+     */
+    public function getAccountSettings() {
+        $json = TwitterAPI::$connection->get('account/settings');
+        return $json;
+    }
+
+    public function getProfileImage() {
+        $json = TwitterAPI::$connection->get('account/verify_credentials');
+        return $json
     }
 
 }
