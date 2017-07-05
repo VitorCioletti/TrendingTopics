@@ -54,6 +54,10 @@ class TwitterAPI implements ITwitterAPI {
         }
     }
 
+    /**
+     * Get information on a certain user.
+     * @param $userName Twitter name of the user.
+     */
     private function getUserID($userName) {
         $response = TwitterAPI::$connection->get('users/lookup', array("screen_name" => "$userName", "include_entities" => false));
         if (!isset($response)) {
