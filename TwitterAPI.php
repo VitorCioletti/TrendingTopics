@@ -33,11 +33,11 @@ class TwitterAPI {
      */
     public function getRecentTweetsByWord($keyWord) {
         $recent = array();
-        $json = TwitterAPI::$connection->get('search/tweets', array("q" => "$keyWord", "recent_type" => "recent", "count" => "10"));
-        if (!isset($json)) {
-            foreach ($json->statuses as $i => $i) {
-                $recent = $json->statuses[$i]->text;
-                echo ("<br> $i  -" . $json->statuses[$i]->text . "</br>"); //Give attention to this expression. It does not seems good. Study more.
+        $response = TwitterAPI::$connection->get('search/tweets', array("q" => "$keyWord", "recent_type" => "recent", "count" => "10"));
+        if (!isset($response)) {
+            foreach ($response->statuses as $i => $i) {
+                $recent = $response->statuses[$i]->text;
+                echo ("<br> $i  -" . $response->statuses[$i]->text . "</br>"); //Give attention to this expression. It does not seems good. Study more.
             }
             return $recent;
         } else {
@@ -66,9 +66,9 @@ class TwitterAPI {
      * @param $userName Twitter name of the user.
      */
     private function getUserID($userName) {
-        $json = TwitterAPI::$connection->get('users/lookup', array("screen_name" => "$userName", "include_entities" => false));
-        if (!isset($json)) {
-            return ($json[0]->id);
+        $response = TwitterAPI::$connection->get('users/lookup', array("screen_name" => "$userName", "include_entities" => false));
+        if (!isset($response)) {
+            return ($response[0]->id);
         } else {
             return null;
         }
@@ -80,10 +80,10 @@ class TwitterAPI {
      */
     public function getUserTweets($userName) {
         $id = $this->getUserID($userName);
-        $json = TwitterAPI::$connection->get('statuses/user_timeline', array("user_id" => $id, "screen_name" => $userName));
-        if (!isset($json) || !isset($id)) {
-            foreach ($json as $i => $i) {
-                echo ("<br> $i - " . $json[$i]->text . "</br>");
+        $response = TwitterAPI::$connection->get('statuses/user_timeline', array("user_id" => $id, "screen_name" => $userName));
+        if (!isset($response) || !isset($id)) {
+            foreach ($response as $i => $i) {
+                echo ("<br> $i - " . $response[$i]->text . "</br>");
             }
         } else {
             echo "<br>Null values</br>";
@@ -99,11 +99,11 @@ class TwitterAPI {
         $geoPlanet = new GeoPlanet();
         $woeid = $geoPlanet->getWoeid($placeName);
         if (!is_null($woeid)) {
-            $json = TwitterAPI::$connection->get('trends/place', array("id" => $woeid));
-            if (sizeof($json[0]->trends) >= 1) {
-                foreach ($json[0]->trends as $i => $i) {
-                    $trendingList[$i] = $json[0]->trends[$i]->name;
-                    echo ("<br>$i - " . $json[0]->trends[$i]->name . "</br>"); //Give attention to this expression. It does not seems good. Study more.
+            $response = TwitterAPI::$connection->get('trends/place', array("id" => $woeid));
+            if (sizeof($response[0]->trends) >= 1) {
+                foreach ($response[0]->trends as $i => $i) {
+                    $trendingList[$i] = $response[0]->trends[$i]->name;
+                    echo ("<br>$i - " . $response[0]->trends[$i]->name . "</br>"); //Give attention to this expression. It does not seems good. Study more.
                 }
                 return $trendingList;
             } else {
@@ -122,9 +122,9 @@ class TwitterAPI {
      */
     public function getUserBanner($userName, $enumType) {
         if (!is_null($userName)) {
-            $json = TwitterAPI::$connection->get('users/profile_banner', array('screen_name' => $userName));
-            if (!is_null($json)) {
-                return ($json->sizes->$enumType->url);
+            $response = TwitterAPI::$connection->get('users/profile_banner', array('screen_name' => $userName));
+            if (!is_null($response)) {
+                return ($response->sizes->$enumType->url);
             } else {
                 echo "Requisition got null results";
                 return null;
@@ -140,13 +140,29 @@ class TwitterAPI {
      * @return Std object with all informations.
      */
     public function getAccountSettings() {
-        $json = TwitterAPI::$connection->get('account/settings');
-        return $json;
+        $response = TwitterAPI::$connection->get('account/settings');
+        return $response;
     }
 
     public function getAccountCredentialsStatus() {
-        $json = TwitterAPI::$connection->get('account/verify_credentials');
-        return $json;
+        $response = TwitterAPI::$connection->get('account/verify_credentials');
+        return $response;
+    }
+
+    /**
+     * Get information on account request limits
+     * @param $selection RateLimitTypeEnum object.
+     * @return Std object with all informations.
+     */
+    public function getRateLimit($selection) {
+        try {
+            $response = TwitterAPI::$connection->get('application/rate_limit_status');
+            return($response->resources->$selection);
+        } catch (Exception $ex) {
+            echo "Request went wrong";
+            echo $ex->getCode();
+            return null;
+        }
     }
 
 }
