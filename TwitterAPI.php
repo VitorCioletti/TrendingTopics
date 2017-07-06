@@ -115,12 +115,20 @@ class TwitterAPI implements ITwitterAPI {
 
     public function getAccountSettings() {
         $response = TwitterAPI::$connection->get('account/settings');
-        return $response;
+        if (!is_null($response)) {
+            return $response;
+        } else {
+            return null;
+        }
     }
 
     public function getAccountCredentialsStatus() {
         $response = TwitterAPI::$connection->get('account/verify_credentials');
-        return $response;
+        if (!is_null($response)) {
+            return $response;
+        } else {
+            return null;
+        }
     }
 
     public function getRateLimit($selection) {
