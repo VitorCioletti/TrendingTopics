@@ -94,7 +94,8 @@ class TwitterAPI implements ITwitterAPI {
                 echo "<br>Error, there are null values</br>";
             }
         } else {
-            echo "<br>GeoPlanet WOEID is null</br>";
+            Echo "Get trending topics went wrong due to WOEID code";
+            return null;
         }
     }
 
